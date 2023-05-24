@@ -7,50 +7,74 @@
 
 #define BUFFER_SIZE 1024
 
-void read_line(char *buffer) {
-    fgets(buffer, BUFFER_SIZE, stdin);
-}
-
-void execute_command(char *command) {
-    pid_t pid, wpid;
-    int status;
-
-    pid = fork();
-    if (pid == 0) {
-        // Child process
-        if (execlp(command, command, NULL) == -1) {
-            perror("Execution error");
-            exit(EXIT_FAILURE);
-        }
-    } else if (pid < 0) {
-        // Fork error
-        perror("Fork error");
-    } else {
-        // Parent process
-        do {
-            wpid = waitpid(pid, &status, WUNTRACED);
-        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-    }
-}
-
-int main() 
+/**
+ * read_line - Reads a line of input from stdin.
+ * @buffer: The buffer to store the input line.
+ */
+void read_line(char *buffer)
 {
-    char buffer[BUFFER_SIZE];
+	fgets(buffer, BUFFER_SIZE, stdin);
+}
 
-    while (1) {
-        printf("simple_shell$ ");
-        read_line(buffer);
+/**
+ * execute_command - Executes the given command.
+ * @command: The command to execute.
+ */
+void execute_command(char *command)
+{
+	pid_t pid, wpid;
+	int status;
 
-        // Check for end of file
-        if (feof(stdin)) {
-            printf("\n");
-            break;
-        }
+	pid = fork();
+	if (pid == 0)
+	{
+		/* Child process */
+		if (execlp(command, command, NULL) == -1)
+		{
+			perror("Execution error");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else if (pid < 0)
+	{
+		/* Fork error */
+		perror("Fork error");
+	}
+	else
+	{
+		/* Parent process */
+		do
+		{
+			wpid = waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+}
 
-        buffer[strcspn(buffer, "\n")] = '\0';  // Remove trailing newline character
+/**
+ * main - Entry point of the program.
+ *
+ * Return: Always 0.
+ */
+int main(void)
+{
+	char buffer[BUFFER_SIZE];
 
-        execute_command(buffer);
-    }
+	while (1)
+	{
+		printf("simple_shell$ ");
+		read_line(buffer);
 
-    return 0;
+		/* Check for end of file */
+		if (feof(stdin))
+		{
+			printf("\n");
+			break;
+		}
+
+		buffer[strcspn(buffer, "\n")] = '\0';  /* Remove trailing newline character */
+
+		execute_command(buffer);
+	}
+
+	return 0;
 }
