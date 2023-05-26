@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-
-#define MAX_COMMAND_LENGTH 100
+#include "shell.h"
 
 /**
  * display_prompt - Displays the prompt symbol to indicate the shell is ready for user input.
